@@ -3,6 +3,7 @@ import { Pdf } from "../../models/pdf/Pdf.js";
 import streamifier from "streamifier";
 import  extractPkg  from "../../utils/extractPdfText.cjs";
 const { extractPdfText } = extractPkg;
+
 export const uploadPdf=async(req,res)=>{
     try {
         const userId=req.user._id;
@@ -63,12 +64,12 @@ export const getPdfByUser = async (req, res) => {
 
     const pdfs = await Pdf.find({ uploadedBy: userId }).populate("uploadedBy","name profile_pic");
 
-    if (!pdfs || pdfs.length === 0) {
-      return res.status(404).json({
-        message: "No PDFs found",
-        success: false,
-      });
-    }
+    // if (!pdfs || pdfs.length === 0) {
+    //   return res.status(404).json({
+    //     message: "No PDFs found",
+    //     success: false,
+    //   });
+    // }
 
     return res.status(200).json({
       message: "PDFs fetched successfully",

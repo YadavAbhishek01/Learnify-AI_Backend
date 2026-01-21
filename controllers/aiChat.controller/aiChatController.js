@@ -217,7 +217,7 @@ export const getFlashCardById=async(req,res)=>{
 
         const flashcard=await FlashCard.find({userId,pdfId}).sort({ createdAt: 1 });
 
-        if(!flashcard)
+        if (flashcard.length === 0)
         {
           return res.status(400).json({
             message:"Flashcard not found",
@@ -362,3 +362,30 @@ ${concept}
     });
   }
 };
+
+export const DeleteFlashCard=async (req,res)=>{
+
+ try {
+   const userId=req.user._id;
+  const flashcardId=req.body;
+
+  const Flashcards=await FlashCard.findOneAndDelete({userId:userId,_id:flashcardId});
+
+    if (!Flashcards) {
+      return res.status(404).json({
+        success: false,
+        message: "FlashCard Not Found or You are not unauthorized to Deleted this ",
+      });
+    }
+  return res.status(200).json({
+      success: true,
+      message: "Flashcard deleted successfully",
+    });
+ } catch (error) {
+  console.error("Delete Flashcard Error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+ }
+}
