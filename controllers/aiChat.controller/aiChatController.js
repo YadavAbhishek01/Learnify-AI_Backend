@@ -243,7 +243,7 @@ export const generateQuize=async(req,res)=>{
    const pdf=await Pdf.findById(pdfId);
    if (!pdf) return res.status(404).json({success:false, message: "PDF not found" });
 
-   const prompt = `
+const prompt = `
 You are an AI teacher.
 
 TASK:
@@ -253,16 +253,22 @@ RULES:
 - Each question must be unique
 - 4 options per question
 - Only ONE correct answer
-- Answer must match exactly one option
+- The correctAnswer MUST be EXACTLY one of the options (full text, not A/B/C/D)
+- Do NOT return A, B, C, D as answers
 - Return ONLY valid JSON
 - No explanation
 
 FORMAT:
 [
   {
-    "question": "",
-    "options": ["A", "B", "C", "D"],
-    "correctAnswer": "A"
+    "question": "Question here",
+    "options": [
+      "Option 1 full text",
+      "Option 2 full text",
+      "Option 3 full text",
+      "Option 4 full text"
+    ],
+    "correctAnswer": "Exact matching option text"
   }
 ]
 
@@ -388,4 +394,40 @@ export const DeleteFlashCard=async (req,res)=>{
       message: "Server error",
     });
  }
+}
+
+export const getFlashcards=async(req,res)=>{
+  try {
+    const userId=req.user._id;
+
+    if(!userId)
+    {
+         return res.status(400).json({
+        message:"user not found",
+        success:flase,
+      })
+    }
+    const flashcard=await FlashCard.find({userId});
+    if(!flashcard)
+    {
+      return res.status(404).json({
+        message: "Flashcards not found",
+        success: false,
+        data:[]
+      });
+   
+    }
+       return res.status(200).json({
+        message:"Flashcard found",
+        success:true,
+        data:flashcard,
+        count:flashcard.length
+      })
+  } catch (error) {
+     console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
+  }
 }
